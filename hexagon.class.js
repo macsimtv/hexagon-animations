@@ -82,9 +82,5 @@ class Hexagon {
         if (!this.isAnimated) {
             return;
         }
-
-        this.container.x += 0.1;
-        this.container.lineStyle(1, 0x7a736a);
-        this.container.drawPolygon(this.hexagonPointsCordinates);
     }
 }
