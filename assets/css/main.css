@@ -11,9 +11,13 @@ body {
     width: 100%;
     height: 100vh;
 
-    color: #00000048;
-
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 20px;
+
+    color: #00000048;
+
+    overflow: hidden;
 }

@@ -32,7 +32,6 @@ class Hexagon {
         this.draw();
         this.app.ticker.add(this.animate.bind(this));
         this.isAnimated = true;
-
     }
     
     container() {
@@ -49,7 +48,6 @@ class Hexagon {
         this.container.addChild(this.strokesContainer);
         
         this.app.stage.addChild(this.container)
-        console.log('Yo')
     }
 
     draw() {
@@ -86,7 +84,7 @@ class Hexagon {
 
         this.drawCircles();
         this.drawBars();
-        this.addToFrame.bind(this)();
+        this.addToFrame();
     }
 
     makeCursor() {
@@ -101,7 +99,7 @@ class Hexagon {
         gradient.addColorStop(0, "#D3872A");
         gradient.addColorStop(1, "#CFB732");
         ctx.fillStyle = gradient;
-        this.cursor = new PIXI.Sprite(PIXI.Texture.from("angryimg.png"));
+        this.cursor = new PIXI.Sprite(PIXI.Texture.from("../../assets/img/angryimg.png"));
 
         // this.cursor.drawCircle(0, 0, 100);
 
@@ -173,20 +171,18 @@ class Hexagon {
     }
 
     animate() {
-        console.log(this.hexagonContainer.width, this.hexagonContainer.height);
-
         if(this.isHovered) {
             this.isAnimated = true;
-            TweenMax.to(this.hexagonContainer.scale, 1, { x: 0.50, y: 0.50, ease: Power2.easeOut });
+            TweenMax.to(this.hexagonContainer.scale, 1, { x: .9, y: .9, ease: Power2.easeOut });
             TweenMax.to(this.hexagonContainer.position, .5, { x: this.cursorEvent.data.global.x - this.container.x, y: this.cursorEvent.data.global.y - this.container.y, ease: Power2.easeOut });
 
             for (let stroke of this.strokes) {
                 stroke.clear();
             }
 
-            this.drawBars.bind(this)();
+            this.drawBars();
 
-            if(this.hexagonContainer.position.x > this.hexagonContainer.width / 2 + 5 || this.hexagonContainer.position.x < -this.hexagonContainer.width / 2 - 5 || this.hexagonContainer.position.y > this.hexagonContainer.height / 2 + 5 || this.hexagonContainer.position.y < -this.hexagonContainer.height / 2 - 5) {
+            if(this.hexagonContainer.position.x > this.hexagonContainer.width / 2 || this.hexagonContainer.position.x < -this.hexagonContainer.width / 2 || this.hexagonContainer.position.y > this.hexagonContainer.height / 2 || this.hexagonContainer.position.y < -this.hexagonContainer.height / 2) {
                 this.isHovered = false;
             }
 
@@ -202,10 +198,61 @@ class Hexagon {
                     stroke.clear();
                 }
 
-                this.drawBars.bind(this)();
+                this.drawBars();
             }
             
             this.isAnimated = false;
         }
     }
+}
+
+// Canva
+const canvas = document.getElementById('graphic');
+
+// View
+const ratio = 1;
+
+let _w = window.innerWidth;
+let _h = window.innerHeight;
+
+const app = new PIXI.Application({
+    view: canvas,
+    width: _w * ratio,
+    height: _h * ratio,
+    // transparent: true,
+});
+
+// Resize
+window.addEventListener('resize', () => {
+    _w = window.innerWidth;
+    _h = window.innerHeight;
+    app.renderer.resize(_w / ratio, _h / ratio);
+});
+
+const size = 50;
+
+const x = 0;
+const y = 0 + size + size / 2;
+
+const hexagons = [];
+
+const space = size * 2;
+
+for (let i = 0; i < app.renderer.width / space; i++) {
+    for (let j = 0; j < app.renderer.height / space; j++) {
+        if(j % 2 == 0) {
+            hexagons.push(new Hexagon(x + i * space, y + j * space, size, app));
+        } else {
+            hexagons.push(new Hexagon(x + (i * space) + size * 1.5, y + (j * space), size, app));
+        }
+    }
+}
+
+hexagons[0].makeCursor();
+
+// Animation
+app.ticker.add(animate);
+
+function animate() {
+
 }
