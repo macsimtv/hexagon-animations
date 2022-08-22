@@ -29,33 +29,15 @@ class HexagonTwo {
             let x = this.x + size * Math.cos(angle_rad);
             let y = this.y + size * Math.sin(angle_rad);
 
-            let circle = new HexagonTwoPoint(x, y);
+            let circle = new HexagonTwoPoint(x, y, this.app);
 
             this.app.stage.addChild(circle.getCircle());
             this.circles.push(circle);
         }
     }
 
-    makeCursor() {
-        this.cursor = new PIXI.Sprite(PIXI.Texture.from("../../assets/img/angryimg.png"));
-
-        const cursorSize = this.size * 5;
-
-        this.cursor.width = cursorSize;
-        this.cursor.height = cursorSize;
-
-        this.cursor.zIndex = 100;
-
-        this.app.stage.addChild(this.cursor);
-        this.app.stage.interactive = true;
-
-
-        this.app.stage.on('mousemove', (e) => {
-            this.cursor.position.x = e.data.global.x - this.cursor.width / 2;
-            this.cursor.position.y = e.data.global.y - this.cursor.height / 2;
-        });
-
-        this.app.stage.mask = this.cursor;
+    setPointer(cursor) {
+        this.cursor = cursor;
     }
 
     animate() {
@@ -94,9 +76,11 @@ class HexagonTwo {
 }
 
 class HexagonTwoPoint {
-    constructor(x, y) {
+    constructor(x, y, app) {
         this.x = x;
         this.y = y;
+        this.x2;
+        this.y2;
 
         this.isMagnetic = false;
         this.isAnimated = false;
@@ -108,6 +92,8 @@ class HexagonTwoPoint {
             x: this.x,
             y: this.y
         };
+
+        this.app = app;
 
         this._init();
     }
@@ -141,15 +127,15 @@ class HexagonTwoPoint {
         this.circle.zIndex = 10;
     }
 
-    drawLine(x1, y1, x2, y2, alpha = 1) {
+    drawLine(x1, y1, x2, y2, alpha = 1, zIndex = 5) {
+        this.x2 = x2;
+        this.y2 = y2;
         // Grey line
         this.line.lineStyle(1, 0xcccccc, alpha);
         this.line.moveTo(x1, y1);
         this.line.lineTo(x2, y2);
 
-        this.line.alpha = alpha;
-
-        this.line.zIndex = 5;
+        this.line.zIndex = zIndex;
     }
 
     clearLine() {
@@ -157,28 +143,21 @@ class HexagonTwoPoint {
     }
 
     animate() {
-        if(!this.isAnimated && !this.isMagnetic) {
-            const duration = 1;
-            // random delay
-            const delay = Math.random() * 1;
-            const random = 5;
+        // Get cursor position
+        let cursor = this.app.renderer.plugins.interaction.mouse.global;
+        
+        // Get distance between cursor and point
+        let distance = HexagonTwo.getDistance(this.x, this.y, cursor.x, cursor.y);
 
-            this.isAnimated = true;
+        const distanceMax = 150;
 
-            gsap.to(this.circle, {
-                x: `random(${this.x - random}, ${this.x + random})`,
-                y: `random(${this.y - random}, ${this.y + random})`,
-                duration: duration,
-                delay: delay,
-                ease: Linear.easeInOut,
-            });
-
-            setTimeout(() => {
-                this.isAnimated = false;
-            }, duration * delay * 1000);
-        } else if (this.isMagnetic) {
-            // Magnetic effet to the cursor with the anchor point
-            
+        if (distance < distanceMax) {
+            this.clearLine();
+            // alpha distance
+            this.drawLine(this.x, this.y, this.x2, this.y2, HexagonTwo.clamp(1 - distance / distanceMax, 0, 1));
+        } else {
+            this.clearLine();
+            this.drawLine(this.x, this.y, this.x2, this.y2, 0.2, 5);
         }
     }
 }
@@ -214,15 +193,14 @@ const y = 0 + size + size / 2;
 
 
 const hexagons = [];
+const space = size * 1.9;
 
-for (let i = 0; i < app.renderer.width / (size * 2); i++) {
-    for (let j = 0; j < app.renderer.height / (size * 2); j++) {
+for (let i = 0; i < app.renderer.width / (space); i++) {
+    for (let j = 0; j < app.renderer.height / (space); j++) {
         if(j % 2 == 0) {
-            hexagons.push(new HexagonTwo(x + i * (size * 2), y + j * (size * 2), size, app));
+            hexagons.push(new HexagonTwo(x + i * (space), y + j * (space), size, app));
         } else {
-            hexagons.push(new HexagonTwo(x + (i * size * 2) + size * 1.5, y + (j * size * 2), size, app));
+            hexagons.push(new HexagonTwo(x + (i * space) + size, y + (j * space), size, app));
         }
     }
 }
-
-hexagons[0].makeCursor();
