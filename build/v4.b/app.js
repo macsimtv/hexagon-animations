@@ -18,6 +18,28 @@ class HexagonTwo {
         this.app.ticker.add(this.animate.bind(this));
     }
 
+    makeCursor() {
+        this.cursor = new PIXI.Sprite(PIXI.Texture.from("../../assets/img/angryimg.png"));
+
+        const cursorSize = this.size * 10;
+
+        this.cursor.width = cursorSize;
+        this.cursor.height = cursorSize;
+
+        this.cursor.zIndex = 100;
+
+        this.app.stage.addChild(this.cursor);
+        this.app.stage.interactive = true;
+
+
+        this.app.stage.on('mousemove', (e) => {
+            this.cursor.position.x = e.data.global.x - this.cursor.width / 2;
+            this.cursor.position.y = e.data.global.y - this.cursor.height / 2;
+        });
+
+        this.app.stage.mask = this.cursor;
+    }
+
     makePoints() {
         for (let side = 0; side < 6; side++) {
 
@@ -124,6 +146,8 @@ class HexagonTwoPoint {
         this.circle.drawCircle(0, 0, 2);
         this.circle.endFill();
 
+        this.circle.alpha = 1;
+
         this.circle.zIndex = 10;
     }
 
@@ -143,22 +167,6 @@ class HexagonTwoPoint {
     }
 
     animate() {
-        // Get cursor position
-        let cursor = this.app.renderer.plugins.interaction.mouse.global;
-        
-        // Get distance between cursor and point
-        let distance = HexagonTwo.getDistance(this.x, this.y, cursor.x, cursor.y);
-
-        const distanceMax = 150;
-
-        if (distance < distanceMax) {
-            this.clearLine();
-            // alpha distance
-            this.drawLine(this.x, this.y, this.x2, this.y2, HexagonTwo.clamp(1 - distance / distanceMax, 0, 1));
-        } else {
-            this.clearLine();
-            this.drawLine(this.x, this.y, this.x2, this.y2, 0.1, 5);
-        }
     }
 }
 
@@ -204,3 +212,5 @@ for (let i = 0; i < app.renderer.width / (space); i++) {
         }
     }
 }
+
+hexagons[0].makeCursor();
