@@ -19,7 +19,7 @@ class HexagonTwo {
     }
 
     makeCursor() {
-        this.cursor = new PIXI.Sprite(PIXI.Texture.from("../../assets/img/angryimg.png"));
+        this.cursor = new PIXI.Sprite(PIXI.Texture.from("../../assets/img/gradient.png"));
 
         const cursorSize = this.size * 25;
 

@@ -152,26 +152,18 @@ class HexagonTwoPoint {
         let distance = HexagonTwo.getDistance(this.x, this.y, cursor.x, cursor.y);
 
         const distanceMax = 150;
-        if (cursor) {
-            if (distance < distanceMax) {
-                this.line.alpha = HexagonTwo.clamp(1 - distance / distanceMax, 0, 1);
-                this.circle.alpha = HexagonTwo.clamp(1 - distance / distanceMax, 0, 1);
 
-                let scaleCalc = 1.5 * (1 - distance / distanceMax);
-                this.circle.scale.x = scaleCalc;
-                this.circle.scale.y = scaleCalc;
-            } else {
-                this.line.alpha = 0;
-                this.circle.alpha = 0.1;
+        if (distance < distanceMax) {
+            this.line.alpha = HexagonTwo.clamp(1 - distance / distanceMax, 0, 1);
+            this.circle.alpha = HexagonTwo.clamp(1 - distance / distanceMax, 0, 1);
 
-                let scaleCircle = 0.75;
-                this.circle.scale.x = scaleCircle;
-                this.circle.scale.y = scaleCircle;
-            }
+            let scaleCalc = 1.5 * (1 - distance / distanceMax);
+            this.circle.scale.x = scaleCalc;
+            this.circle.scale.y = scaleCalc;
         } else {
-            this.line.alpha = 0;
-            this.circle.alpha = 0.1;
-            
+            this.line.alpha = 0.1;
+            this.circle.alpha = 0.15;
+
             let scaleCircle = 0.75;
             this.circle.scale.x = scaleCircle;
             this.circle.scale.y = scaleCircle;
